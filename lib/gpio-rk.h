@@ -20,6 +20,12 @@
 
 #include <vector>
 
+#if __ARM_ARCH >= 7
+#define LED_MATRIX_ALLOW_BARRIER_DELAY 1
+#else
+#define LED_MATRIX_ALLOW_BARRIER_DELAY 0
+#endif
+
 // Putting this in our namespace to not collide with other things called like
 // this.
 namespace rgb_matrix {
@@ -135,6 +141,8 @@ public:
 // Get rolling over microsecond counter. We get this from a hardware register
 // if possible and a terrible slow fallback otherwise.
 uint32_t GetMicrosecondCounter();
+
+void SleepMicroseconds(long);
 
 }  // end namespace rgb_matrix
 
