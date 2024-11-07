@@ -13,10 +13,6 @@
 // You should have received a copy of the GNU General Public License
 // along with this program.  If not, see <http://gnu.org/licenses/gpl-2.0.txt>
 
-#ifdef ORANGEPI_3B
-#include "gpio-rk.h"
-#else
-
 #ifndef RPI_GPIO_INTERNAL_H
 #define RPI_GPIO_INTERNAL_H
 
@@ -80,27 +76,25 @@ public:
 
 private:
   inline gpio_bits_t ReadRegisters() const {
-    return (static_cast<gpio_bits_t>(*gpio_read_bits_low_)
-#ifdef ENABLE_WIDE_GPIO_COMPUTE_MODULE
-            | (static_cast<gpio_bits_t>(*gpio_read_bits_low_) << 32)
-#endif
-            );
+    gpio_bits_t valueL = (*gpio_read_bits_low_) & 0xFFFF;
+    gpio_bits_t valueH = (*gpio_read_bits_high_) << 16;
+    return static_cast<gpio_bits_t>(valueL + valueH);
   }
 
   inline void WriteSetBits(gpio_bits_t value) {
-    *gpio_set_bits_low_ = static_cast<uint32_t>(value & 0xFFFFFFFF);
-#ifdef ENABLE_WIDE_GPIO_COMPUTE_MODULE
-    if (uses_64_bit_)
-      *gpio_set_bits_high_ = static_cast<uint32_t>(value >> 32);
-#endif
+    gpio_bits_t valueL = value & 0xFFFF;
+    gpio_bits_t valueH = (value >> 16);
+
+    *gpio_set_bits_low_ = static_cast<uint32_t>((valueL + (valueL << 16)));
+    *gpio_set_bits_high_ = static_cast<uint32_t>((valueH + (valueH << 16)));
   }
 
   inline void WriteClrBits(gpio_bits_t value) {
-    *gpio_clr_bits_low_ = static_cast<uint32_t>(value & 0xFFFFFFFF);
-#ifdef ENABLE_WIDE_GPIO_COMPUTE_MODULE
-    if (uses_64_bit_)
-      *gpio_clr_bits_high_ = static_cast<uint32_t>(value >> 32);
-#endif
+    gpio_bits_t valueL = (value & 0xFFFF) << 16;
+    gpio_bits_t valueH = value & 0xFFFF0000;
+
+    *gpio_set_bits_low_ = static_cast<uint32_t>(valueL);
+    *gpio_set_bits_high_ = static_cast<uint32_t>(valueH);
   }
 
 private:
@@ -110,15 +104,9 @@ private:
   int slowdown_;
 
   volatile uint32_t *gpio_set_bits_low_;
-  volatile uint32_t *gpio_clr_bits_low_;
-  volatile uint32_t *gpio_read_bits_low_;
-
-#ifdef ENABLE_WIDE_GPIO_COMPUTE_MODULE
-  bool uses_64_bit_;
   volatile uint32_t *gpio_set_bits_high_;
-  volatile uint32_t *gpio_clr_bits_high_;
+  volatile uint32_t *gpio_read_bits_low_;
   volatile uint32_t *gpio_read_bits_high_;
-#endif
 };
 
 // A PinPulser is a utility class that pulses a GPIO pin. There can be various
@@ -151,6 +139,3 @@ uint32_t GetMicrosecondCounter();
 }  // end namespace rgb_matrix
 
 #endif  // RPI_GPIO_INGERNALH
-
-#endif //ORANGEPI_3B
-

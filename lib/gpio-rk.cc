@@ -160,10 +160,9 @@ class TimerBasedPinPulser : public PinPulser {
 public:
   TimerBasedPinPulser(GPIO *io, gpio_bits_t bits,
                       const std::vector<int> &nano_specs)
-      : io_(io), bits_(bits), nano_specs_(nano_specs) {
+    : io_(io), bits_(bits), nano_specs_(nano_specs) {
     if (!s_Timer1Mhz) {
-      fprintf(stderr,
-              "FYI: not running as root which means we can't properly "
+      fprintf(stderr, "FYI: not running as root which means we can't properly "
               "control timing unless this is a real-time kernel. Expect color "
               "degradation. Consider running as root with sudo.\n");
     }
@@ -187,9 +186,8 @@ static void (*busy_wait_impl)(long) = busy_wait_nanos;
 // Best effort write to file. Used to set kernel parameters.
 static void WriteTo(const char *filename, const char *str) {
   const int fd = open(filename, O_WRONLY);
-  if (fd < 0)
-    return;
-  (void)write(fd, str, strlen(str)); // Best effort. Ignore return value.
+  if (fd < 0) return;
+  (void) write(fd, str, strlen(str));  // Best effort. Ignore return value.
   close(fd);
 }
 
@@ -199,8 +197,7 @@ static void WriteTo(const char *filename, const char *str) {
 // our RT-thread is locked onto one of these.
 // So let's tell it not to do that.
 static void DisableRealtimeThrottling() {
-  if (GetNumCores() == 1)
-    return; // Not safe if we don't have > 1 core.
+  if (GetNumCores() == 1) return;   // Not safe if we don't have > 1 core.
   // We need to leave the kernel a little bit of time, as it does not like
   // us to hog the kernel solidly. The default of 950000 leaves 50ms that
   // can generate visible flicker, so we reduce that to 1ms.
@@ -239,14 +236,14 @@ void Timers::sleep_nanos(long nanos) {
 
   if (s_Timer1Mhz) {
     static long kJitterAllowanceNanos = JitterAllowanceMicroseconds() * 1000;
-    if (nanos > kJitterAllowanceNanos + MINIMUM_NANOSLEEP_TIME_US * 1000) {
+    if (nanos > kJitterAllowanceNanos + MINIMUM_NANOSLEEP_TIME_US*1000) {
       const uint32_t before = *s_Timer1Mhz;
-      struct timespec sleep_time = {0, nanos - kJitterAllowanceNanos};
+      struct timespec sleep_time = { 0, nanos - kJitterAllowanceNanos };
       nanosleep(&sleep_time, NULL);
       const uint32_t after = *s_Timer1Mhz;
       const long nanoseconds_passed = 1000 * (uint32_t)(after - before);
       if (nanoseconds_passed > nanos) {
-        return; // darn, missed it.
+        return;  // darn, missed it.
       } else {
         nanos -= nanoseconds_passed; // remaining time with busy-loop
       }
@@ -254,21 +251,19 @@ void Timers::sleep_nanos(long nanos) {
   } else {
     // Not running as root, not having access to 1Mhz timer. Approximate large
     // durations with nanosleep(); small durations are done with busy wait.
-    if (nanos >
-        (EMPIRICAL_NANOSLEEP_OVERHEAD_US + MINIMUM_NANOSLEEP_TIME_US) * 1000) {
-      struct timespec sleep_time = {0, nanos - EMPIRICAL_NANOSLEEP_OVERHEAD_US *
-                                                   1000};
+    if (nanos > (EMPIRICAL_NANOSLEEP_OVERHEAD_US + MINIMUM_NANOSLEEP_TIME_US)*1000) {
+      struct timespec sleep_time
+        = { 0, nanos - EMPIRICAL_NANOSLEEP_OVERHEAD_US*1000 };
       nanosleep(&sleep_time, NULL);
       return;
     }
   }
 
-  busy_wait_impl(nanos); // Use model-specific busy-loop for remaining time.
+  busy_wait_impl(nanos);  // Use model-specific busy-loop for remaining time.
 }
 
 static void busy_wait_nanos(long nanos) {
-  if (nanos < 20)
-    return;
+  if (nanos < 20) return;
   // Interesting, the Pi4 is _slower_ than the Pi3 ? At least for this busy loop
   for (uint32_t i = (nanos - 5) * 100 / 132; i != 0; --i) {
     asm("");
@@ -281,9 +276,7 @@ static void busy_wait_nanos(long nanos) {
 PinPulser *PinPulser::Create(GPIO *io, gpio_bits_t gpio_mask,
                              bool allow_hardware_pulsing,
                              const std::vector<int> &nano_wait_spec) {
-  if (!Timers::Init())
-    return NULL;
-
+  if (!Timers::Init()) return NULL;
   // if (allow_hardware_pulsing && HardwarePinPulser::CanHandle(gpio_mask)) {
   //   return new HardwarePinPulser(gpio_mask, nano_wait_spec);
   //} else {
@@ -293,8 +286,7 @@ PinPulser *PinPulser::Create(GPIO *io, gpio_bits_t gpio_mask,
 
 // For external use, e.g. in the matrix for extra time.
 uint32_t GetMicrosecondCounter() {
-  if (s_Timer1Mhz)
-    return *s_Timer1Mhz;
+  if (s_Timer1Mhz) return *s_Timer1Mhz;
 
   // When run as non-root, we can't read the timer. Fall back to slow
   // operating-system ways.

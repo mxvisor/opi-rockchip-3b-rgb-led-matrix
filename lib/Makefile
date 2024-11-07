@@ -3,10 +3,17 @@
 # So
 #   -lrgbmatrix
 ##
-OBJECTS=gpio.o led-matrix.o options-initialize.o framebuffer.o \
-        thread.o bdf-font.o graphics.o led-matrix-c.o hardware-mapping.o \
+
+DEFINES+=-DORANGEPI_3B
+
+OBJECTS=led-matrix.o options-initialize.o framebuffer.o \
+        thread.o bdf-font.o graphics.o led-matrix-c.o \
         pixel-mapper.o multiplex-mappers.o \
 	content-streamer.o
+
+OBJECTS+=gpio-rk.o hardware-mapping-rk.o
+
+#OBJECTS+=gpio.o hardware-mapping.o
 
 TARGET=librgbmatrix
 
@@ -163,7 +170,7 @@ HARDWARE_DESC?=regular
 # make USER_DEFINES="-DSHOW_REFRESH_RATE"
 DEFINES+=$(USER_DEFINES)
 
-DEFINES+=-DORANGEPI_3B
+
 
 DEFINES+=-DDEFAULT_HARDWARE='"$(HARDWARE_DESC)"'
 INCDIR=../include
