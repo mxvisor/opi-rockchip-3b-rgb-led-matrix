@@ -26,16 +26,29 @@ that they have the freedom to adapt and improve).
 
 ![HUB75E 16PIN](img/16PIN-Cable-definition.jpg)
 
-| HUB75E | PIN | GPIO4 | HUB75E | PIN | GPIO4 |
-| :----: | :-: | :---: | :----: | :-: | :---: |
-|   16   | R1  |  140  |   15   | G1  |  141  |
-|   14   | B1  |  147  |   13   | GND |       |
-|   12   | R2  |  128  |   11   | G2  |  130  |
-|   10   | B2  |  138  |   9    |  E  |  136  |
-|   8    |  A  |  139  |   7    |  B  |  131  |
-|   6    |  C  |  129  |   5    |  D  |  132  |
-|   4    | CLK |  134  |   3    | LAT |  135  |
-|   2    | OE  |  144  |   1    | GND |       |
+Orange 3B v1
+| HUB75E | PIN | GPIO4 | PI PIN | HUB75E | PIN | GPIO4 | PI PIN |
+| :----: | :-: | :---: | :----: | :----: | :-: | :---: | :----: |
+|   16   | R1  |  140  |   3    |   15   | G1  |  141  |   5    |
+|   14   | B1  |  147  |   7    |   13   | GND |       |        |
+|   12   | R2  |  128  |   13   |   11   | G2  |  130  |   15   |
+|   10   | B2  |  138  |   19   |   9    |  E  |  136  |   21   |
+|   8    |  A  |  139  |   23   |   7    |  B  |  131  |   16   |
+|   6    |  C  |  129  |   18   |   5    |  D  |  132  |   22   |
+|   4    | CLK |  134  |   24   |   3    | LAT |  135  |   26   |
+|   2    | OE  |  144  |   32   |   1    | GND |       |        |
+
+Orange 3B v2
+| HUB75E | PIN | GPIO4 | PI PIN | HUB75E | PIN | GPIO4 | PI PIN |
+| :----: | :-: | :---: | :----: | :----: | :-: | :---: | :----: |
+|   16   | R1  |  140  |   3    |   15   | G1  |  141  |   5    |
+|   14   | B1  |  147  |   7    |   13   | GND |       |        |
+|   12   | R2  |  128  |   13   |   11   | G2  |  130  |   15   |
+|   10   | B2  |  138  |   19   |   9    |  E  |  136  |   21   |
+|   8    |  A  |  139  |   23   |   7    |  B  |  131  |   16   |
+|   6    |  C  |  129  |   18   |   5    |  D  |  132  |   22   |
+|   4    | CLK |  134  |   24   |   3    | LAT |  135  |   29   |
+|   2    | OE  |  144  |   32   |   1    | GND |       |        |
 
 <font color=red>Orange Pi 3B needs to shut down the kernel `CONFIG_STRICT_DEVMEM` for `mmap` to work.</font>
 

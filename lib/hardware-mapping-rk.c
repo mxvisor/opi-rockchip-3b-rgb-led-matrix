@@ -27,8 +27,12 @@ struct HardwareMapping matrix_hardware_mappings[] = {
 
     .output_enable = GPIO_BIT(16),
     .clock         = GPIO_BIT(6),
-    .strobe        = GPIO_BIT(7),
 
+#if ORANGEPI_3B==1
+    .strobe        = GPIO_BIT(7),
+#else
+    .strobe       = GPIO_BIT(5),
+#endif
 
     /* Address lines */
     .a             = GPIO_BIT(11),

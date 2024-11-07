@@ -4,7 +4,7 @@
 #   -lrgbmatrix
 ##
 
-DEFINES+=-DORANGEPI_3B -DDEFAULT_ROWS=32 -DDEFAULT_COLS=32
+DEFINES+=-DORANGEPI_3B=1 -DDEFAULT_ROWS=32 -DDEFAULT_COLS=32
 
 OBJECTS=led-matrix.o options-initialize.o framebuffer.o \
         thread.o bdf-font.o graphics.o led-matrix-c.o \
